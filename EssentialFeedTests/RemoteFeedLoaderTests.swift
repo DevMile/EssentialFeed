@@ -69,7 +69,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, toCompleteWith: .success([])) {
-            let emptyJSON = Data("{\"items\": []}".utf8)
+            let emptyJSON = Data("{\"items\": []}".utf8) // or use: makeItemsJSON(items: [])
             client.complete(withStatusCode: 200, data: emptyJSON)
         }
     }
@@ -98,7 +98,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     private func expect(_ sut: RemoteFeedLoader, toCompleteWith result: RemoteFeedLoader.Result,
-                        when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+                        when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
         
         var capturedResults = [RemoteFeedLoader.Result]()
         sut.load { capturedResults.append($0) }
@@ -119,7 +119,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             "description": feedItem.description,
             "location": feedItem.location,
             "image": feedItem.imageURL.absoluteString
-        ].compactMapValues { $0 }
+        ].compactMapValues { $0 } // return only non-nil values
         
         return (feedItem, json)
     }
@@ -128,6 +128,8 @@ class RemoteFeedLoaderTests: XCTestCase {
         let itemsJSON = ["items": items]
         return try! JSONSerialization.data(withJSONObject: itemsJSON)
     }
+    
+    // MARK: - HTTPClientSpy
     
     private class HTTPClientSpy: HTTPClient {
         private var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
