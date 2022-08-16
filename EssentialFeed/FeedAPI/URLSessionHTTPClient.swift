@@ -7,6 +7,8 @@
 
 import Foundation
 
+// Adapter type
+
 public class URLSessionHTTPClient: HTTPClient {
     var session: URLSession
     
