@@ -10,6 +10,23 @@ import EssentialFeed
 
 class EssentialFeedAPIEndToEndTests: XCTestCase {
     
+    // Caching example
+//    func cachingDemo() {
+//        // Setup cache
+//        let cache = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 10 * 1024 * 1024, diskPath: nil)
+//        let configuration = URLSessionConfiguration.default
+//        configuration.urlCache = cache
+//        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData // check many options for cache policy
+//        let session = URLSession(configuration: configuration)
+//
+//        let url = URL(string: "https://any-url.com")!
+//        // or setup cache policy when creating request
+//        let request = URLRequest(url: url, cachePolicy: .returnCacheDataDontLoad, timeoutInterval: 30)
+//
+//        // If setting shared instance of URLCache, do it in application didFinishLaunching.
+//        URLCache.shared = cache
+//    }
+    
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() {
         switch getFeedResult() {
         case let .success(items)?:
@@ -32,7 +49,9 @@ class EssentialFeedAPIEndToEndTests: XCTestCase {
         // First server url not working because of redirection.
         //        let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let testServerURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5c52cdd0b8a045df091d2fff/1548930512083/feed-case-study-test-api-feed.json")!
-        let client = URLSessionHTTPClient()
+        // URLSession is using .ephemeral configuration, meaning - not storing url requests cache to disk
+        // If default configuration was used, tests would pass even when network is offline because they used cached state.
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let loader = RemoteFeedLoader(url: testServerURL, client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(loader, file: file, line: line)
