@@ -43,7 +43,8 @@ public class CodableFeedStore: FeedStore {
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
-        // storeURL is a value type so we copy it not to pass self into async closure avoiding capturing self
+        // storeURL is a value type so we copy it not to pass self into async closure avoiding capturing self.
+        // There is no retain cycle if we write self.storeURL because queue.async will get deallocated when finished, but we dont want to capture self if there is no need.
         let storeURL = self.storeURL
         queue.async {
             guard let data = try? Data(contentsOf: storeURL) else {
@@ -53,6 +54,7 @@ public class CodableFeedStore: FeedStore {
             do {
                 let decoder = JSONDecoder()
                 let cache = try decoder.decode(Cache.self, from: data)
+                // Note: completion is executed on the background thread and client need to handle it
                 completion(.found(feed: cache.localFeed, timestamp: cache.timestamp))
             } catch {
                 completion(.failure(error))
