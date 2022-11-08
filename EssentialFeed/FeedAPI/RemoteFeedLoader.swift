@@ -9,7 +9,7 @@ import Foundation
 
 public final class RemoteFeedLoader: FeedLoader {
     
-    public typealias Result = LoadFeedResult
+    public typealias Result = FeedLoader.Result
     
     private let url: URL
     private let client: HTTPClient
@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
             guard self != nil else { return }
             
             switch result {
-            case .success(let data, let response):
+            case .success((let data, let response)):
                 completion(RemoteFeedLoader.map(data, from: response))
             case .failure:
                 completion(.failure(Error.connectivity))
