@@ -173,13 +173,13 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     // MARK: - HTTPClientSpy
     
     private class HTTPClientSpy: HTTPClient {
-        private var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
+        private var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
         
         var requestedURLs: [URL] {
             return messages.map { $0.url }
         }
 
-        func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
             // store url and completion in messages array
             // completion will be executed later with complete(with:) methods
             messages.append((url, completion))
