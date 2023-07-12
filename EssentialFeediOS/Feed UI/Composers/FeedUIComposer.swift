@@ -12,7 +12,7 @@ public final class FeedUIComposer {
     private init() {}
     
     public static func feedComposedWith(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader) -> FeedViewController {
-        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: feedLoader)
+        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: MainQueueDispatchDecorator(decoratee: feedLoader))
         let refreshController = FeedRefreshViewController(delegate: presentationAdapter)
         let feedController = FeedViewController(refreshController: refreshController)
         feedController.title = FeedPresenter.title
@@ -102,6 +102,27 @@ private final class FeedImageDataLoaderPresentationAdapter<View: FeedImageView, 
     
     func didCancelImageRequest() {
         task?.cancel()
+    }
+}
+
+// MARK: Decorater pattern to provide FeedLoader with dispatching to Main Queue without leaking that info to clients
+private final class MainQueueDispatchDecorator: FeedLoader {
+    private let decoratee: FeedLoader
+    
+    init(decoratee: FeedLoader) {
+        self.decoratee = decoratee
+    }
+    
+    func load(completion: @escaping (FeedLoader.Result) -> Void) {
+        decoratee.load { result in
+            if Thread.isMainThread {
+                completion(result)
+            } else {
+                DispatchQueue.main.async {
+                    completion(result)
+                }
+            }
+        }
     }
 }
 
