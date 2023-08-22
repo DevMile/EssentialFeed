@@ -1,6 +1,5 @@
 //
 //  FeedImageDataLoader.swift
-//  EssentialFeediOS
 //
 //  Created by Milan Bojic on 11.2.23..
 //
