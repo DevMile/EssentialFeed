@@ -7,7 +7,18 @@
 
 import Foundation
 
-final class LocalFeedImageDataLoader: FeedImageDataLoader {
+public final class LocalFeedImageDataLoader: FeedImageDataLoader {
+    private let store: FeedImageDataStore
+    
+    public init(store: FeedImageDataStore) {
+        self.store = store
+    }
+    
+    public enum Error: Swift.Error {
+        case failed
+        case notFound
+    }
+    
     private final class Task: FeedImageDataLoaderTask {
         private var completion: ((FeedImageDataLoader.Result) -> Void)?
         
@@ -28,18 +39,7 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
         }
     }
     
-    public enum Error: Swift.Error {
-        case failed
-        case notFound
-    }
-    
-    private let store: FeedImageDataStore
-    
-    init(store: FeedImageDataStore) {
-        self.store = store
-    }
-    
-    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         let task = Task(completion)
         store.retrieve(dataForURL: url) { [weak self] result in
             guard self != nil else { return }
