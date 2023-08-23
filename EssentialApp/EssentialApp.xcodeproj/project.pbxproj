@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		70ACD42B2A96796800FC732A /* FeedLoaderWithFallbackComposite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70ACD42A2A96796800FC732A /* FeedLoaderWithFallbackComposite.swift */; };
 		70C7DEAA2A9552EB0060E5C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C7DEA92A9552EB0060E5C3 /* AppDelegate.swift */; };
 		70C7DEAC2A9552EB0060E5C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C7DEAB2A9552EB0060E5C3 /* SceneDelegate.swift */; };
 		70C7DEAE2A9552EB0060E5C3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C7DEAD2A9552EB0060E5C3 /* ViewController.swift */; };
 		70C7DEB12A9552EB0060E5C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70C7DEAF2A9552EB0060E5C3 /* Main.storyboard */; };
 		70C7DEB32A9552EF0060E5C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 70C7DEB22A9552EF0060E5C3 /* Assets.xcassets */; };
 		70C7DEB62A9552EF0060E5C3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70C7DEB42A9552EF0060E5C3 /* LaunchScreen.storyboard */; };
-		70C7DEC12A9552EF0060E5C3 /* EssentialAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C7DEC02A9552EF0060E5C3 /* EssentialAppTests.swift */; };
 		70C7DEDC2A95541A0060E5C3 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70C7DEDA2A95541A0060E5C3 /* EssentialFeed.framework */; };
 		70C7DEDD2A95541A0060E5C3 /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 70C7DEDA2A95541A0060E5C3 /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		70C7DEDE2A95541A0060E5C3 /* EssentialFeediOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70C7DEDB2A95541A0060E5C3 /* EssentialFeediOS.framework */; };
@@ -53,6 +53,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		70ACD42A2A96796800FC732A /* FeedLoaderWithFallbackComposite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoaderWithFallbackComposite.swift; sourceTree = "<group>"; };
 		70C7DEA62A9552EB0060E5C3 /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70C7DEA92A9552EB0060E5C3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70C7DEAB2A9552EB0060E5C3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -62,7 +63,6 @@
 		70C7DEB52A9552EF0060E5C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		70C7DEB72A9552EF0060E5C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		70C7DEBC2A9552EF0060E5C3 /* EssentialAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		70C7DEC02A9552EF0060E5C3 /* EssentialAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialAppTests.swift; sourceTree = "<group>"; };
 		70C7DEC62A9552EF0060E5C3 /* EssentialAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		70C7DEDA2A95541A0060E5C3 /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70C7DEDB2A95541A0060E5C3 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,7 +132,7 @@
 		70C7DEBF2A9552EF0060E5C3 /* EssentialAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				70C7DEC02A9552EF0060E5C3 /* EssentialAppTests.swift */,
+				70ACD42A2A96796800FC732A /* FeedLoaderWithFallbackComposite.swift */,
 			);
 			path = EssentialAppTests;
 			sourceTree = "<group>";
@@ -218,6 +218,7 @@
 					};
 					70C7DEBB2A9552EF0060E5C3 = {
 						CreatedOnToolsVersion = 14.3.1;
+						LastSwiftMigration = 1430;
 						TestTargetID = 70C7DEA52A9552EB0060E5C3;
 					};
 					70C7DEC52A9552EF0060E5C3 = {
@@ -288,7 +289,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70C7DEC12A9552EF0060E5C3 /* EssentialAppTests.swift in Sources */,
+				70ACD42B2A96796800FC732A /* FeedLoaderWithFallbackComposite.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,15 +508,17 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8BL3Y5M34U;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miledev.EssentialAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EssentialApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EssentialApp";
@@ -527,11 +530,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8BL3Y5M34U;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miledev.EssentialAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
