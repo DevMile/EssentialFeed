@@ -13,104 +13,153 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     func test_init_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
         
-        XCTAssertTrue(store.receivedMessages.isEmpty)
+        XCTAssertEqual(store.receivedMessages, [])
     }
     
-    func test_loadImageDataFromURL_requestsStoredDataForURL() {
+    func test_load_requestsCacheRetrieval() {
         let (sut, store) = makeSUT()
-        let url = anyURL()
         
-        _ = sut.loadImageData(from: url) { _ in }
+        sut.load { _ in }
         
-        XCTAssertEqual(store.receivedMessages, [.retrieve(dataFor: url)])
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
-    func test_loadImageDataFromURL_failsOnStoreError() {
+    func test_load_failsOnRetrievalError() {
         let (sut, store) = makeSUT()
+        let retrievalError = anyNSError()
         
-        expect(sut, toCompleteWith: failed(), when: {
-            let retrievalError = anyNSError()
+        expect(sut, toCompleteWith: .failure(retrievalError), when: {
             store.completeRetrieval(with: retrievalError)
         })
     }
-
-    func test_loadImageDataFromURL_deliversNotFoundErrorOnNotFound() {
+    
+    func test_load_deliversNoImagesOnEmptyCache() {
         let (sut, store) = makeSUT()
         
-        expect(sut, toCompleteWith: notFound(), when: {
-            store.completeRetrieval(with: .none)
+        expect(sut, toCompleteWith: .success([]), when: {
+            store.completeRetrievalWithEmptyCache()
         })
     }
     
-    func test_loadImageDataFromURL_deliversStoredDataOnFoundData() {
-        let (sut, store) = makeSUT()
-        let foundData = anyData()
+    func test_load_deliversCachedImagesOnNonExpiredCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let nonExpiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: 1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        expect(sut, toCompleteWith: .success(foundData), when: {
-            store.completeRetrieval(with: foundData)
+        expect(sut, toCompleteWith: .success(feed.models), when: {
+            store.completeRetrieval(with: feed.local, timestamp: nonExpiredTimestamp)
         })
     }
     
-    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
+    func test_load_deliversNoImagesOnCacheExpiration() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let expirationTimestamp = fixedCurrentDate.minusFeedCacheMaxAge()
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            store.completeRetrieval(with: feed.local, timestamp: expirationTimestamp)
+        })
+    }
+    
+    func test_load_deliversNoImagesOnExpiredCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: -1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            store.completeRetrieval(with: feed.local, timestamp: expiredTimestamp)
+        })
+    }
+    
+    func test_load_hasNoSideEffectsOnRetrievalError() {
         let (sut, store) = makeSUT()
-        let foundData = anyData()
         
-        var received = [FeedImageDataLoader.Result]()
-        let task = sut.loadImageData(from: anyURL()) { received.append($0) }
-        task.cancel()
-        
-        store.completeRetrieval(with: foundData)
-        store.completeRetrieval(with: .none)
+        sut.load { _ in }
         store.completeRetrieval(with: anyNSError())
         
-        XCTAssertTrue(received.isEmpty, "Expected no received results after cancelling task")
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
-    func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
-        let store = FeedImageDataStoreSpy()
-        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
+    func test_load_hasNoSideEffectsOnEmptyCache() {
+        let (sut, store) = makeSUT()
         
-        var received = [FeedImageDataLoader.Result]()
-        _ = sut?.loadImageData(from: anyURL()) { received.append($0) }
+        sut.load { _ in }
+        store.completeRetrievalWithEmptyCache()
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_hasNoSideEffectsOnNonExpiredCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let nonExpiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: 1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+
+        sut.load { _ in }
+        store.completeRetrieval(with: feed.local, timestamp: nonExpiredTimestamp)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_hasNoSideEffectsOnCacheExpiration() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let expirationTimestamp = fixedCurrentDate.minusFeedCacheMaxAge()
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: feed.local, timestamp: expirationTimestamp)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_hasNoSideEffectsOnExpiredCache() {
+        let feed = uniqueImageFeed()
+        let fixedCurrentDate = Date()
+        let expiredTimestamp = fixedCurrentDate.minusFeedCacheMaxAge().adding(seconds: -1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: feed.local, timestamp: expiredTimestamp)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+        
+        var receivedResults = [LocalFeedLoader.LoadResult]()
+        sut?.load { receivedResults.append($0) }
         
         sut = nil
-        store.completeRetrieval(with: anyData())
+        store.completeRetrievalWithEmptyCache()
         
-        XCTAssertTrue(received.isEmpty, "Expected no received results after instance has been deallocated")
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: - Helpers
     
-    private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
-        let store = FeedImageDataStoreSpy()
-        let sut = LocalFeedImageDataLoader(store: store)
+    private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
+        let store = FeedStoreSpy()
+        let sut = LocalFeedLoader(store: store, currentDate: currentDate)
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, store)
     }
     
-    private func failed() -> FeedImageDataLoader.Result {
-        return .failure(LocalFeedImageDataLoader.LoadError.failed)
-    }
-    
-    private func notFound() -> FeedImageDataLoader.Result {
-        return .failure(LocalFeedImageDataLoader.LoadError.notFound)
-    }
-    
-    private func never(file: StaticString = #file, line: UInt = #line) {
-        XCTFail("Expected no no invocations", file: file, line: line)
-    }
-
-    private func expect(_ sut: LocalFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+    private func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
         
-        _ = sut.loadImageData(from: anyURL()) { receivedResult in
+        sut.load { receivedResult in
             switch (receivedResult, expectedResult) {
-            case let (.success(receivedData), .success(expectedData)):
-                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
-                
-            case (.failure(let receivedError as LocalFeedImageDataLoader.LoadError),
-                  .failure(let expectedError as LocalFeedImageDataLoader.LoadError)):
+            case let (.success(receivedImages), .success(expectedImages)):
+                XCTAssertEqual(receivedImages, expectedImages, file: file, line: line)
+            
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
                 
             default:
@@ -123,5 +172,5 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         action()
         wait(for: [exp], timeout: 1.0)
     }
-    
+
 }
