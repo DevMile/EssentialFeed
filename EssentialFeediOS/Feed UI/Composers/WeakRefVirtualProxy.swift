@@ -5,15 +5,22 @@
 //  Created by Milan Bojic on 12.7.23..
 //
 
-import UIKit
-
 // MARK: Proxy pattern
+
+import UIKit
+import EssentialFeed
 
 final class WeakRefVirtualProxy<T: AnyObject> {
     private weak var object: T?
     
     init(_ object: T) {
         self.object = object
+    }
+}
+
+extension WeakRefVirtualProxy: FeedErrorView where T: FeedErrorView {
+    func display(_ viewModel: FeedErrorViewModel) {
+        object?.display(viewModel)
     }
 }
 

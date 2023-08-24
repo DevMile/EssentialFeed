@@ -8,6 +8,6 @@
 import Foundation
 import EssentialFeed
 
-struct FeedViewModel {
+public struct FeedViewModel {
     let feed: [FeedImage]
 }
